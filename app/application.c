@@ -1,11 +1,11 @@
 #include <application.h>
 
-#define FIRMWARE "bcf-kit-motion-detector:" TAG
-
+#define SERVICE_INTERVAL_INTERVAL (60 * 60 * 1000)
 #define BATTERY_UPDATE_INTERVAL (60 * 60 * 1000)
 #define TEMPERATURE_PUB_NO_CHANGE_INTEVAL (15 * 60 * 1000)
-#define TEMPERATURE_PUB_VALUE_CHANGE 0.2f
-#define TEMPERATURE_UPDATE_INTERVAL (1 * 1000)
+#define TEMPERATURE_PUB_VALUE_CHANGE 1.0f
+#define TEMPERATURE_UPDATE_SERVICE_INTERVAL (5 * 1000)
+#define TEMPERATURE_UPDATE_NORMAL_INTERVAL (10 * 1000)
 
 // LED instance
 bc_led_t led;
@@ -13,8 +13,8 @@ bc_led_t led;
 // Button instance
 bc_button_t button;
 
-// Temperature instance
-bc_tag_temperature_t temperature;
+// Thermometer instance
+bc_tmp112_t tmp112;
 event_param_t temperature_event_param = { .next_pub = 0 };
 
 bc_module_pir_t pir;
@@ -44,16 +44,16 @@ void battery_event_handler(bc_module_battery_event_t event, void *event_param)
     }
 }
 
-void temperature_tag_event_handler(bc_tag_temperature_t *self, bc_tag_temperature_event_t event, void *event_param)
+void tmp112_event_handler(bc_tmp112_t *self, bc_tmp112_event_t event, void *event_param)
 {
     float value;
     event_param_t *param = (event_param_t *)event_param;
 
-    if (event == BC_TAG_TEMPERATURE_EVENT_UPDATE)
+    if (event == BC_TMP112_EVENT_UPDATE)
     {
-        if (bc_tag_temperature_get_temperature_celsius(self, &value))
+        if (bc_tmp112_get_temperature_celsius(self, &value))
         {
-            if ((fabs(value - param->value) >= TEMPERATURE_PUB_VALUE_CHANGE) || (param->next_pub < bc_scheduler_get_spin_tick()))
+            if ((fabsf(value - param->value) >= TEMPERATURE_PUB_VALUE_CHANGE) || (param->next_pub < bc_scheduler_get_spin_tick()))
             {
                 bc_radio_pub_temperature(param->channel, &value);
 
@@ -77,6 +77,13 @@ void pir_event_handler(bc_module_pir_t *self, bc_module_pir_event_t event, void 
     }
 }
 
+void switch_to_normal_mode_task(void *param)
+{
+    bc_tmp112_set_update_interval(&tmp112, TEMPERATURE_UPDATE_NORMAL_INTERVAL);
+
+    bc_scheduler_unregister(bc_scheduler_get_current_task_id());
+}
+
 void application_init(void)
 {
     // Initialize LED
@@ -95,17 +102,19 @@ void application_init(void)
     bc_module_battery_set_event_handler(battery_event_handler, NULL);
     bc_module_battery_set_update_interval(BATTERY_UPDATE_INTERVAL);
 
-    // Initialize temperature
+    // Initialize thermometer sensor on core module
     temperature_event_param.channel = BC_RADIO_PUB_CHANNEL_R1_I2C0_ADDRESS_ALTERNATE;
-    bc_tag_temperature_init(&temperature, BC_I2C_I2C0, BC_TAG_TEMPERATURE_I2C_ADDRESS_ALTERNATE);
-    bc_tag_temperature_set_update_interval(&temperature, TEMPERATURE_UPDATE_INTERVAL);
-    bc_tag_temperature_set_event_handler(&temperature, temperature_tag_event_handler, &temperature_event_param);
+    bc_tmp112_init(&tmp112, BC_I2C_I2C0, 0x49);
+    bc_tmp112_set_event_handler(&tmp112, tmp112_event_handler, &temperature_event_param);
+    bc_tmp112_set_update_interval(&tmp112, TEMPERATURE_UPDATE_SERVICE_INTERVAL);
 
     // Initialize pir module
     bc_module_pir_init(&pir);
     bc_module_pir_set_event_handler(&pir, pir_event_handler, NULL);
 
     bc_radio_pairing_request("kit-motion-detector", VERSION);
+
+    bc_scheduler_register(switch_to_normal_mode_task, NULL, SERVICE_INTERVAL_INTERVAL);
 
     bc_led_pulse(&led, 2000);
 }
