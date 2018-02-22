@@ -6,6 +6,7 @@
 #define TEMPERATURE_PUB_VALUE_CHANGE 1.0f
 #define TEMPERATURE_UPDATE_SERVICE_INTERVAL (5 * 1000)
 #define TEMPERATURE_UPDATE_NORMAL_INTERVAL (10 * 1000)
+#define PIR_PUB_MIN_INTEVAL  (1 * 60 * 1000)
 
 // LED instance
 bc_led_t led;
@@ -19,6 +20,7 @@ event_param_t temperature_event_param = { .next_pub = 0 };
 
 bc_module_pir_t pir;
 uint16_t pir_event_count = 0;
+bc_tick_t pir_next_pub = 0;
 
 void button_event_handler(bc_button_t *self, bc_button_event_t event, void *event_param)
 {
@@ -73,7 +75,12 @@ void pir_event_handler(bc_module_pir_t *self, bc_module_pir_event_t event, void 
     {
         pir_event_count++;
 
-        bc_radio_pub_event_count(BC_RADIO_PUB_EVENT_PIR_MOTION, &pir_event_count);
+        if (pir_next_pub < bc_scheduler_get_spin_tick())
+        {
+            bc_radio_pub_event_count(BC_RADIO_PUB_EVENT_PIR_MOTION, &pir_event_count);
+
+            pir_next_pub = bc_scheduler_get_spin_tick() + PIR_PUB_MIN_INTEVAL;
+        }
     }
 }
 
