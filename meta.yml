@@ -1,6 +1,9 @@
-article: https://www.bigclown.com/doc/projects/wireless-motion-detector/
+article: https://www.bigclown.com/doc/projects/radio-motion-detector/
+images:
+  - title:
+    url: https://www.bigclown.com/kits/motion-detector/main.png
 assembly:
   - name: BigClown PIR Module
   - name: BigClown Core Module
   - name: BigClown Mini Battery Module
-  
+
