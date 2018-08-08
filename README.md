@@ -1,13 +1,16 @@
 <a href="https://www.bigclown.com/"><img src="https://bigclown.sirv.com/logo.png" width="200" alt="BigClown Logo" align="right"></a>
 
-# Firmware for BigClown Wireless Motion Detector Kit
+# Firmware for BigClown Radio Motion Detector
 
-[![Travis](https://img.shields.io/travis/bigclownlabs/bcf-kit-wireless-motion-detector/master.svg)](https://travis-ci.org/bigclownlabs/bcf-kit-wireless-motion-detector)
-[![Release](https://img.shields.io/github/release/bigclownlabs/bcf-kit-wireless-motion-detector.svg)](https://github.com/bigclownlabs/bcf-kit-wireless-motion-detector/releases)
-[![License](https://img.shields.io/github/license/bigclownlabs/bcf-kit-wireless-motion-detector.svg)](https://github.com/bigclownlabs/bcf-kit-wireless-motion-detector/blob/master/LICENSE)
+[![Travis](https://img.shields.io/travis/bigclownlabs/bcf-radio-motion-detector/master.svg)](https://travis-ci.org/bigclownlabs/bcf-radio-motion-detector)
+[![Release](https://img.shields.io/github/release/bigclownlabs/bcf-radio-motion-detector.svg)](https://github.com/bigclownlabs/bcf-radio-motion-detector/releases)
+[![License](https://img.shields.io/github/license/bigclownlabs/bcf-radio-motion-detector.svg)](https://github.com/bigclownlabs/bcf-radio-motion-detector/blob/master/LICENSE)
 [![Twitter](https://img.shields.io/twitter/follow/BigClownLabs.svg?style=social&label=Follow)](https://twitter.com/BigClownLabs)
 
-This repository contains firmware for Motion detector Kit
+
+See the project documentation on this link:
+
+**https://www.bigclown.com/doc/projects/radio-motion-detector/**
 
 
 ## License
