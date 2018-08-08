@@ -35,14 +35,16 @@ void button_event_handler(bc_button_t *self, bc_button_event_t event, void *even
 
 void battery_event_handler(bc_module_battery_event_t event, void *event_param)
 {
-    (void) event;
     (void) event_param;
 
     float voltage;
 
-    if (bc_module_battery_get_voltage(&voltage))
+    if (event == BC_MODULE_BATTERY_EVENT_UPDATE)
     {
-        bc_radio_pub_battery(&voltage);
+        if (bc_module_battery_get_voltage(&voltage))
+        {
+            bc_radio_pub_battery(&voltage);
+        }
     }
 }
 
@@ -105,7 +107,7 @@ void application_init(void)
     bc_button_set_event_handler(&button, button_event_handler, NULL);
 
     // Initialize battery
-    bc_module_battery_init(BC_MODULE_BATTERY_FORMAT_MINI);
+    bc_module_battery_init();
     bc_module_battery_set_event_handler(battery_event_handler, NULL);
     bc_module_battery_set_update_interval(BATTERY_UPDATE_INTERVAL);
 
@@ -119,7 +121,7 @@ void application_init(void)
     bc_module_pir_init(&pir);
     bc_module_pir_set_event_handler(&pir, pir_event_handler, NULL);
 
-    bc_radio_pairing_request("kit-motion-detector", VERSION);
+    bc_radio_pairing_request("motion-detector", VERSION);
 
     bc_scheduler_register(switch_to_normal_mode_task, NULL, SERVICE_INTERVAL_INTERVAL);
 
