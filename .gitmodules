@@ -3,4 +3,4 @@
 	url = https://github.com/bigclownlabs/bcf-sdk.git
 [submodule ".vscode"]
 	path = .vscode
-	url = git@github.com:bigclownlabs/bcf-vscode.git
+	url = https://github.com/bigclownlabs/bcf-vscode.git
