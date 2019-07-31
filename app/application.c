@@ -5,6 +5,7 @@
 #define TEMPERATURE_PUBLISH_VALUE_CHANGE 1.0f
 #define TEMPERATURE_MEASURE_INTERVAL (5 * 1000)
 #define PIR_PUB_MIN_INTEVAL  (1 * 60 * 1000)
+#define ACCELEROMETER_UPDATE_NORMAL_INTERVAL (5 * 1000)
 
 // LED instance
 bc_led_t led;
@@ -15,6 +16,12 @@ bc_button_t button;
 // Thermometer instance
 bc_tmp112_t tmp112;
 event_param_t temperature_event_param = { .next_pub = 0 };
+
+// Accelerometer instance
+bc_lis2dh12_t lis2dh12;
+
+// Dice instance
+bc_dice_t dice;
 
 bc_module_pir_t pir;
 uint16_t pir_event_count = 0;
@@ -38,6 +45,8 @@ typedef struct Configuration
     bc_tick_t temperature_publish_interval;
     float temperature_publish_value_change;
 
+    bc_tick_t accelerometer_measure_interval;
+
     bc_tick_t battery_publish_interval;
 
 } Configuration;
@@ -55,8 +64,57 @@ Configuration config_default = {
     .temperature_publish_interval = TEMPERATURE_PUBLISH_INTEVAL,
     .temperature_publish_value_change = TEMPERATURE_PUBLISH_VALUE_CHANGE,
 
+    .accelerometer_measure_interval = ACCELEROMETER_UPDATE_NORMAL_INTERVAL,
+
     .battery_publish_interval = BATTERY_PUBLISH_INTERVAL
 };
+
+// This function dispatches accelerometer events
+void lis2dh12_event_handler(bc_lis2dh12_t *self, bc_lis2dh12_event_t event, void *event_param)
+{
+    // Update event?
+    if (event == BC_LIS2DH12_EVENT_UPDATE)
+    {
+        bc_lis2dh12_result_g_t result;
+
+        // Successfully read accelerometer vectors?
+        if (bc_lis2dh12_get_result_g(self, &result))
+        {
+            //bc_atci_printf("APP: Acceleration = [%.2f,%.2f,%.2f]", result.x_axis, result.y_axis, result.z_axis);
+
+            // Update dice with new vectors
+            bc_dice_feed_vectors(&dice, result.x_axis, result.y_axis, result.z_axis);
+
+            // This variable holds last dice face
+            static bc_dice_face_t last_face = BC_DICE_FACE_UNKNOWN;
+
+            // Get current dice face
+            bc_dice_face_t face = bc_dice_get_face(&dice);
+
+            // Did dice face change from last time?
+            if (last_face != face)
+            {
+                // Remember last dice face
+                last_face = face;
+
+                // Convert dice face to integer
+                int orientation = face;
+
+                bc_atci_printf("APP: Publish orientation = %d", orientation);
+
+                // Publish orientation message on radio
+                // Be careful, this topic is only development state, can be change in future.
+                bc_radio_pub_int("orientation", &orientation);
+            }
+        }
+    }
+    // Error event?
+    else if (event == BC_LIS2DH12_EVENT_ERROR)
+    {
+        bc_atci_printf("APP: Accelerometer error");
+    }
+}
+
 
 void button_event_handler(bc_button_t *self, bc_button_event_t event, void *event_param)
 {
@@ -141,6 +199,8 @@ void pir_event_handler(bc_module_pir_t *self, bc_module_pir_event_t event, void 
     }
 }
 
+
+
 bool atci_config_set(bc_atci_param_t *param)
 {
 
@@ -200,6 +260,7 @@ bool atci_config_set(bc_atci_param_t *param)
     if (strncmp(name, "Temperature Measure Interval", sizeof(name)) == 0)
     {
         config.temperature_measure_interval = value * 1000;
+        bc_tmp112_set_update_interval(&tmp112, config.temperature_measure_interval);
         return true;
     }
 
@@ -212,6 +273,13 @@ bool atci_config_set(bc_atci_param_t *param)
     if (strncmp(name, "Temperature Publish Value Change", sizeof(name)) == 0)
     {
         config.temperature_publish_value_change = value / 10.0;
+        return true;
+    }
+
+    if (strncmp(name, "Accelerometer Measure Interval", sizeof(name)) == 0)
+    {
+        config.accelerometer_measure_interval = value * 1000;
+        bc_lis2dh12_set_update_interval(&lis2dh12, config.accelerometer_measure_interval);
         return true;
     }
 
@@ -239,7 +307,9 @@ bool atci_config_action(void)
     bc_atci_printf("$CONFIG: \"Temperature Publish Interval\",%lld", config.temperature_publish_interval / 1000);
     bc_atci_printf("$CONFIG: \"Temperature Publish Value Change\",%.1f", config.temperature_publish_value_change);
 
-    bc_atci_printf("$CONFIG: \"Battery Publish Interval\",%lld", config.battery_publish_interval);
+    bc_atci_printf("$CONFIG: \"Accelerometer Measure Interval\",%lld", config.accelerometer_measure_interval / 1000);
+
+    bc_atci_printf("$CONFIG: \"Battery Publish Interval\",%lld", config.battery_publish_interval / 1000);
 
     return true;
 }
@@ -289,6 +359,14 @@ void application_init(void)
     bc_module_pir_init(&pir);
     bc_module_pir_set_event_handler(&pir, pir_event_handler, NULL);
     bc_module_pir_set_sensitivity(&pir, BC_MODULE_PIR_SENSITIVITY_MEDIUM);
+
+    // Initialize accelerometer
+    bc_lis2dh12_init(&lis2dh12, BC_I2C_I2C0, 0x19);
+    bc_lis2dh12_set_event_handler(&lis2dh12, lis2dh12_event_handler, NULL);
+    bc_lis2dh12_set_update_interval(&lis2dh12, config.accelerometer_measure_interval);
+
+    // Initialize dice
+    bc_dice_init(&dice, BC_DICE_FACE_UNKNOWN);
 
     static const bc_atci_command_t commands[] = {
             { "&F", atci_f_action, NULL, NULL, NULL, "Restore configuration to factory defaults" },
