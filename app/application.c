@@ -195,7 +195,7 @@ void pir_event_handler(bc_module_pir_t *self, bc_module_pir_event_t event, void 
 
         bc_atci_printf("PIR Event Count %d", pir_event_count);
 
-        if (pir_next_pub < bc_scheduler_get_spin_tick())
+        if (config.pir_pub_min_interval != 0 && pir_next_pub < bc_scheduler_get_spin_tick())
         {
             bc_radio_pub_event_count(BC_RADIO_PUB_EVENT_PIR_MOTION, &pir_event_count);
 
