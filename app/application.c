@@ -4,8 +4,15 @@
 #define TEMPERATURE_PUBLISH_INTEVAL (15 * 60 * 1000)
 #define TEMPERATURE_PUBLISH_VALUE_CHANGE 1.0f
 #define TEMPERATURE_MEASURE_INTERVAL (5 * 1000)
-#define PIR_PUB_MIN_INTEVAL  (1 * 60 * 1000)
+
+#define PIR_PUB_MIN_INTERVAL  (1 * 60 * 1000)
+#define PIR_SENSITIVITY 1
+
 #define ACCELEROMETER_UPDATE_NORMAL_INTERVAL (5 * 1000)
+
+#define PRESENCE_ENTER_THRESHOLD 4
+#define PRESENCE_LEAVE_THRESHOLD 2
+#define PRESENCE_INTERVAL (2 * 60 * 1000)
 
 // LED instance
 bc_led_t led;
@@ -54,11 +61,11 @@ typedef struct Configuration
 Configuration config;
 
 Configuration config_default = {
-    .pir_sensitivity = 0,
-    .pir_pub_min_interval = PIR_PUB_MIN_INTEVAL,
-    .enter.threshold = 4,
-    .leave.threshold = 2,
-    .enter.interval = 15 * 1000,
+    .pir_sensitivity = PIR_SENSITIVITY,
+    .pir_pub_min_interval = PIR_PUB_MIN_INTERVAL,
+    .enter.threshold = PRESENCE_ENTER_THRESHOLD,
+    .leave.threshold = PRESENCE_LEAVE_THRESHOLD,
+    .enter.interval = PRESENCE_INTERVAL,
 
     .temperature_measure_interval = TEMPERATURE_MEASURE_INTERVAL,
     .temperature_publish_interval = TEMPERATURE_PUBLISH_INTEVAL,
@@ -100,7 +107,7 @@ void lis2dh12_event_handler(bc_lis2dh12_t *self, bc_lis2dh12_event_t event, void
                 // Convert dice face to integer
                 int orientation = face;
 
-                bc_atci_printf("APP: Publish orientation = %d", orientation);
+                //bc_atci_printf("APP: Publish orientation = %d", orientation);
 
                 // Publish orientation message on radio
                 // Be careful, this topic is only development state, can be change in future.
@@ -330,7 +337,7 @@ bool atci_w_action(void)
 
 void application_init(void)
 {
-    bc_config_init(0x123456, &config, sizeof(config), &config_default);
+    bc_config_init(0x1234, &config, sizeof(config), &config_default);
 
     // Initialize LED
     bc_led_init(&led, BC_GPIO_LED, false, false);
@@ -407,7 +414,7 @@ void application_task()
     bc_radio_pub_int("presence/-/state", &presence_publish);
     bc_radio_pub_int("presence/-/events", &pir_presence_count);
 
-    bc_atci_printf("Presence: %d, Event Count %d", presence_flag, pir_presence_count);
+    bc_atci_printf("Presence: %d, Presence Event Count %d", presence_flag, pir_presence_count);
 
     pir_presence_count = 0;
 
