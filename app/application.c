@@ -206,8 +206,6 @@ void pir_event_handler(bc_module_pir_t *self, bc_module_pir_event_t event, void 
     }
 }
 
-
-
 bool atci_config_set(bc_atci_param_t *param)
 {
 
