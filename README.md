@@ -1,11 +1,11 @@
-<a href="https://www.bigclown.com/"><img src="https://bigclown.sirv.com/logo.png" width="200" alt="BigClown Logo" align="right"></a>
+<a href="https://www.hardwario.com/"><img src="https://www.hardwario.com/ci/assets/hw-logo.svg" width="200" alt="HARDWARIO Logo" align="right"></a>
 
-# Firmware for BigClown Radio Motion Detector
+# Firmware for HARDWARIO Radio Motion Detector
 
 [![Travis](https://img.shields.io/travis/bigclownlabs/bcf-radio-motion-detector/master.svg)](https://travis-ci.org/bigclownlabs/bcf-radio-motion-detector)
 [![Release](https://img.shields.io/github/release/bigclownlabs/bcf-radio-motion-detector.svg)](https://github.com/bigclownlabs/bcf-radio-motion-detector/releases)
 [![License](https://img.shields.io/github/license/bigclownlabs/bcf-radio-motion-detector.svg)](https://github.com/bigclownlabs/bcf-radio-motion-detector/blob/master/LICENSE)
-[![Twitter](https://img.shields.io/twitter/follow/BigClownLabs.svg?style=social&label=Follow)](https://twitter.com/BigClownLabs)
+[![Twitter](https://img.shields.io/twitter/follow/hardwario_en.svg?style=social&label=Follow)](https://twitter.com/hardwario_en)
 
 
 See the project documentation on this link:

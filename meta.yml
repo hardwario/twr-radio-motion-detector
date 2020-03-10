@@ -1,9 +1,9 @@
 article: https://www.bigclown.com/doc/projects/radio-motion-detector/
 images:
   - title:
-    url: https://cdn.myshoptet.com/usr/shop.hardwario.com/user/shop/category_portrait/171-2_motion-detector-kit-a1.jpg?5de56e1c
+    url: https://github.com/hardwario/website/blob/master/static/kits-images/motion-detector/main.png
 assembly:
-  - name: BigClown PIR Module
-  - name: BigClown Core Module
-  - name: BigClown Mini Battery Module
+  - name: HARDWARIO PIR Module
+  - name: HARDWARIO Core Module
+  - name: HARDWARIO Mini Battery Module
 
