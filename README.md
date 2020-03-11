@@ -10,7 +10,7 @@
 
 See the project documentation on this link:
 
-**https://www.bigclown.com/doc/projects/radio-motion-detector/**
+**https://developers.hardwario.com/projects/radio-motion-detector/**
 
 
 ## License
