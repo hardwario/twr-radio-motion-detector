@@ -1,7 +1,7 @@
 article: https://www.bigclown.com/doc/projects/radio-motion-detector/
 images:
   - title:
-    url: https://github.com/hardwario/website/blob/master/static/kits-images/motion-detector/main.png
+    url: https://raw.githubusercontent.com/hardwario/website/master/static/kits-images/motion-detector/main.png
 assembly:
   - name: HARDWARIO PIR Module
   - name: HARDWARIO Core Module
