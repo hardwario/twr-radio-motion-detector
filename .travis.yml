@@ -6,7 +6,7 @@ install:
 script:
   - export PLATFORMIO_BUILD_FLAGS="-D'VERSION=\"${VERSION}\"'"
   - pio run -e release
-  - mv .pio/build/release/firmware.bin bcf-radio-motion-detector-${VERSION}.bin
+  - mv .pio/build/release/firmware.bin twr-radio-motion-detector-${VERSION}.bin
   - ls -lha
 deploy:
   skip_cleanup: true
