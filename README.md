@@ -2,7 +2,7 @@
 
 # Firmware for HARDWARIO Radio Motion Detector
 
-[![Travis](https://travis-ci.org/hardwario/twr-radio-motion-detector.svg?branch=master)](https://travis-ci.org/hardwario/twr-radio-motion-detector)
+[![build](https://github.com/hardwario/twr-radio-motion-detector/actions/workflows/main.yml/badge.svg)](https://github.com/hardwario/twr-radio-motion-detector/actions/workflows/main.yml)
 [![Release](https://img.shields.io/github/release/bigclownlabs/bcf-radio-motion-detector.svg)](https://github.com/bigclownlabs/bcf-radio-motion-detector/releases)
 [![License](https://img.shields.io/github/license/bigclownlabs/bcf-radio-motion-detector.svg)](https://github.com/bigclownlabs/bcf-radio-motion-detector/blob/master/LICENSE)
 [![Twitter](https://img.shields.io/twitter/follow/hardwario_en.svg?style=social&label=Follow)](https://twitter.com/hardwario_en)
