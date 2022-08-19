@@ -382,7 +382,7 @@ void application_init(void)
     };
     twr_atci_init(commands, TWR_ATCI_COMMANDS_LENGTH(commands));
 
-    twr_radio_pairing_request("motion-detector", VERSION);
+    twr_radio_pairing_request("motion-detector", FW_VERSION);
 
     // Replan application_task to the first interval
     twr_scheduler_plan_relative(0, config.enter.interval);
